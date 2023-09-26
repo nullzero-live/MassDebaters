@@ -31,7 +31,7 @@ class MongoDB:
 
 
 db = MongoDB(os.getenv("MONGOUI"), db_name="NewDatabase", collection_name="langchain")
-db.new_collection("aTest")
+#db.new_collection("aTest")
 db.listCollectionNames()
 
 

@@ -2,7 +2,7 @@
 import os
 import openai
 from typing import List, Dict
-import logging
+
 import random
 from dotenv import load_dotenv
 from pydantic import BaseModel
@@ -25,7 +25,7 @@ wandb.login(key=os.getenv("WANDB_API_KEY"))
 
 
  #Q&A
-def outcomes():
+class Outcomes:
     question_history = ["What is the meaning of life?"]
     answers_history = []
 
@@ -41,8 +41,6 @@ class Results(BaseModel):
     answers: List[str]
 
 
-
-
 class ModelAction:
     def __init__(self):
         pass
@@ -50,30 +48,54 @@ class ModelAction:
     def question_generator(self, topic):
         #Add Output Parser
         llm = OpenAI(model="text-davinci-003")
-        return llm.generate([f"give me a 2 sentence question at university level on {topic}"]*15)
+        gen_text = llm.generate([f"give me a 2 sentence question at university level on {topic}"]*15)
+        return gen_text.replace("\n", "")
 
-
-class StudyBuddy:
-    def __init__(self):
-        pass
-
-    def create_speakers(self, name, temperament, opinion, speaker_list=[]):
+class Speaker:
+    def __init__(self, name, temperament, opinion=None):
         self.name = name
         self.temperament = temperament
-        if speaker_list == None:
-            speaker_list = []
-        else:
-            speaker_list.append(self.name)
-        
-        return speaker_list
-        
+        self.opinion = opinion
+    
+
+class StudyBuddy:
+    speaker_list = []
+    def __init__(self, speaker_list):
+        self.speaker_list = []
+
+    John = create_speakers(John, "Aggressive")
+    Jane = create_speakers(Jane, "Balanced")
+    Sarah = create_speakers(Sarah, "Meek")
+ 
+    @classmethod
+    def create_speakers(cls, names, temperament, opinion=None):
+        # Ensure speaker_list is initialized
+        if not hasattr(cls, 'speaker_list'):
+            cls.speaker_list = []
+
+        for i in group:
+            speaker = Speaker(i, temperament, opinion)
+            cls.speaker_list.append(speaker)
+
+        return cls.speaker_list
+            
     def choose_speaker(self):
-        speakers = [John,Jane,Sarah] #create_speakers()
-        id = random.randrange(3)
-        speaker = random.choice(speakers)
-        return speaker
+        """
+        Choose a random speaker from a list of speakers.
         
-   
+        Returns:
+            str: The name of the chosen speaker.
+        """
+        # Create a list of speakers
+        self.speakers = [John, Jane, Sarah] # create_speakers()
+        
+        # Choose a random speaker from the list
+        self.speaker = random.choice(self.speakers)
+        
+        # Return the chosen speaker
+        return self.speaker
+            
+    
     
     def pose_question(self, context:str) -> str:
         question_count = 0
@@ -98,7 +120,7 @@ class StudyBuddy:
 
         #ADD TO QUESTION CUE
         add_to_chat_history(Records.question_history, question_count, output)
-        outcomes.answers_history.extend(output)
+        Outcomes.answers_history.extend(output)
         try:
             questions.pop(0)
         except Exception:
@@ -108,17 +130,21 @@ class StudyBuddy:
         return output
         
     
-    def answer_question(self, for_res) -> str:
+    def answer_question(self, for_res:str) -> str:
         answer_count = 0
         speaker = self.choose_speaker()
-        opinion = self.state_opinion(question_history[0], speaker.name)
-        llm = OpenAI(model="text-davinci-003")
-        speaker = self.choose_speaker()
+       
         speak_name = speaker.name
         speak_temp = speaker.temperament
+        print(speak_name)
+        print(type(speak_name))
+        opinion = StudyBuddy.state_opinion(Outcomes.question_history[0], speaker=speak_name)
+        print(opinion)
+        llm = OpenAI(model="text-davinci-003")
+    
         
         
-        to_respond = [question_history[0] if True else print("No such file")]
+        for_res = [Outcomes.question_history[0] if True else print("No such file")]
 
         template = """The 3 participants are to make a strong argument in {response} to a stated question. The question will be stated then answered. It will be at the level of a university student.Role of the {speaker}: When your name is called or your opinion is 'STRONGLY DISAGREE' you will pose a question based on the topic currently discussed
                     your tone, approach and civility will be based on your your {temperament}. You will make it clear if you agree or disagree and will have an {opinion}
@@ -134,14 +160,12 @@ class StudyBuddy:
                       Name: ANSWER"""
         
         prompt_template = PromptTemplate(template=template, input_variables=["history", "temperament", "speaker", "response", "opinion"])
-
-
-
-        final_prompt = prompt_template.format(history="A brave new world", temperament=speak_temp, speaker=speak_name, response=to_respond, opinion=opinion)
+        final_prompt = prompt_template.format(history="A brave new world", temperament=speak_temp, speaker=speak_name, response=for_res, opinion=opinion)
         response = llm(final_prompt)
         
-        answers.append(response)
-        add_to_chat_history(Records.answer_history, answer_count, response)
+        # Add to chat history
+        Outcomes.answers.append(response)
+        add_to_chat_history(Outcomes.answer_history, answer_count, response)
 
         #Add additional questions
         template = """Search for the phrase NEW QUESTION: in {output}
@@ -156,22 +180,22 @@ class StudyBuddy:
         final_prompt = prompt_template.format(output=response)
         new_questions = llm(final_prompt)
         
-        question_history.append(new_questions)
+        Outcomes.question_history.append(new_questions)
         
         #ADD TO QUESTION CUE
-        answers_history.extend(output)
+        Outcomes.answers_history.extend(output)
 
         return response
         
 
     
     #Info is a dictionary with person and information
-    def state_opinion(self, info:dict, speaker:dict) -> dict:
-        a1 = StudyBuddy()
-        speaker_raw = a1.choose_speaker().name,
-        speaker = speaker_raw.name
+    @classmethod
+    def state_opinion(self, info:str, speaker:str) -> dict:
+        speak_name = speaker
         opinions = ["neutral", "positive", "negative", "STRONGLY DISAGREE"],
-        opinion = opinions[random.randrange(4)]
+        opinion = opinions[random.randrange(len(opinions))]
+        speak_name.opinion = opinions
         return opinion
        
 
@@ -210,14 +234,8 @@ class Records:
 def add_to_chat_history(dic_name, idx, metadata):
     dic_name['idx'].append(idx)
     dic_name['metadata'].append(metadata)
-    """
-    Adds an index and metadata to the chat_history dictionary.
-    
-    Parameters:
-        idx (any): The index to add to the 'idx' key in chat_history.
-        metadata (any): The metadata to add to the 'metadata' key in chat_history.  
-    """
-    
+    return dic_name
+
 class AgentMonitor:
     def __init__(period, method):
         self.period = period
@@ -237,9 +255,6 @@ class ConversationModerator:
 #agent1 = ChainsAgents("John is an affable gentlemen")
 #print(agent1.create_agent())
 
-John = StudyBuddy()
-Jane = StudyBuddy()
-Sarah = StudyBuddy()
 #Jane = StudyBuddy(List(questions), List(answers))
 #Sarah = StudyBuddy(List(questions), List(answers))
 
@@ -250,8 +265,11 @@ Sarah.create_speakers(name="Sarah", temperament="Rad", opinion=None)
 i = StudyBuddy()
 j = StudyBuddy()
 
-print(a = i.pose_question("This is the opening debate"))
-print(b = j.answer_question(a))
+a = i.answer_question("This is the opening debate")
+print(a)
+
+
+
 
 '''class DataProceeing:
     define 
