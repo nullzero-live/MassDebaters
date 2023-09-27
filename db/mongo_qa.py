@@ -29,9 +29,8 @@ class MongoDB:
     def delete(self, query):
         return self.collection.delete_one(query)
 
-
-db = MongoDB(os.getenv("MONGOUI"), db_name="NewDatabase", collection_name="langchain")
-#db.new_collection("aTest")
-db.listCollectionNames()
+def init_mongo():
+    db = MongoDB(os.getenv("MONGOUI"), db_name="NewDatabase", collection_name="langchain")
+    return db 
 
 

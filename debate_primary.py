@@ -28,6 +28,20 @@ wandb.login(key=os.getenv("WANDB_API_KEY"))
 class Outcomes:
     question_history = ["What is the meaning of life?"]
     answers_history = []
+    def __init__(self):
+        pass
+
+    def score_argument(self, argument):
+        self.argumet_list = argument_list:list
+        score_tool = #Imaginary Tool
+        final_score = score_tool(argument_list)
+        return final_score    
+
+    def score_register(self, scores, debate_id):
+        def __init__()
+    
+
+
 
 
 def add_to_chat_history(dic_name, idx, metadata):
@@ -56,29 +70,32 @@ class Speaker:
         self.name = name
         self.temperament = temperament
         self.opinion = opinion
+
+class SpeakerUtility:
+    #speaker_list = []
+    
+    @classmethod
+    def create_speakers(cls, name, temperament, opinion=None):
+        """
+        Create a new speaker object and add it to the speaker list.
+
+        Args:
+            name (str): The name of the speaker.
+            temperament (str): The temperament of the speaker.
+            opinion (str, optional): The speaker's opinion. Defaults to None.
+
+        Returns:
+            Speaker: The newly created speaker object.
+        """
+        speaker = Speaker(name, temperament, opinion)
+        cls.speaker_list.append(speaker)
+        return speaker
     
 
-class StudyBuddy:
-    speaker_list = []
-    def __init__(self, speaker_list):
-        self.speaker_list = []
-
-    John = create_speakers(John, "Aggressive")
-    Jane = create_speakers(Jane, "Balanced")
-    Sarah = create_speakers(Sarah, "Meek")
- 
     @classmethod
-    def create_speakers(cls, names, temperament, opinion=None):
-        # Ensure speaker_list is initialized
-        if not hasattr(cls, 'speaker_list'):
-            cls.speaker_list = []
-
-        for i in group:
-            speaker = Speaker(i, temperament, opinion)
-            cls.speaker_list.append(speaker)
-
+    def get_speakers(cls):
         return cls.speaker_list
-            
+    
     def choose_speaker(self):
         """
         Choose a random speaker from a list of speakers.
@@ -86,15 +103,16 @@ class StudyBuddy:
         Returns:
             str: The name of the chosen speaker.
         """
-        # Create a list of speakers
-        self.speakers = [John, Jane, Sarah] # create_speakers()
-        
         # Choose a random speaker from the list
-        self.speaker = random.choice(self.speakers)
+        self.speaker = random.choice(cls.speaker_list)
         
         # Return the chosen speaker
         return self.speaker
-            
+
+    
+class StudyBuddy:
+    def __init__(self):
+        pass
     
     
     def pose_question(self, context:str) -> str:
@@ -132,8 +150,6 @@ class StudyBuddy:
     
     def answer_question(self, for_res:str) -> str:
         answer_count = 0
-        speaker = self.choose_speaker()
-       
         speak_name = speaker.name
         speak_temp = speaker.temperament
         print(speak_name)
@@ -249,6 +265,19 @@ class ConversationModerator:
         pass
 
 
+SpeakerUtility.speaker_list.clear()
+John = SpeakerUtility()
+Jane = SpeakerUtility()
+Sarah = SpeakerUtility()
+
+John = SpeakerUtility.speaker_list.append(John.create_speakers(name="John", temperament="Aggressive", opinion="neutral"))
+Jane = SpeakerUtility.speaker_list.append(Jane.create_speakers(name="Jane", temperament="Placid", opinion="neutral"))
+Sarah = SpeakerUtility.speaker_list.append(Sarah.create_speakers(name="Sarah", temperament="Diplomatic", opinion="neutral"))
+
+
+
+
+
 
 
 
@@ -258,15 +287,17 @@ class ConversationModerator:
 #Jane = StudyBuddy(List(questions), List(answers))
 #Sarah = StudyBuddy(List(questions), List(answers))
 
-John.create_speakers(name="John", temperament="Aggressive", opinion=None)
-Jane.create_speakers(name="Jane", temperament="Passive", opinion=None)
-Sarah.create_speakers(name="Sarah", temperament="Rad", opinion=None)
+#John.create_speakers(name="John", temperament="Aggressive", opinion=None)
+#Jane.create_speakers(name="Jane", temperament="Passive", opinion=None)
+#Sarah.create_speakers(name="Sarah", temperament="Rad", opinion=None)
 
-i = StudyBuddy()
-j = StudyBuddy()
 
-a = i.answer_question("This is the opening debate")
-print(a)
+
+#a = i.answer_question("This is the opening debate")
+#print(a)
+
+   
+
 
 
 

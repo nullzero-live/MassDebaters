@@ -9,16 +9,40 @@ from dotenv import load_dotenv, find_dotenv`
 import nltk
 import pymongo
 from datetime import datetime
+from debate_primary import Outcomes
 
 class DebateMonitor:
     def __init__(self,db_uri, db_name):
         pass
-
+    # recording of questions for long term storage will be in mongoDB
     def record_questions(self, question_id, speaker, text, position):
         self.question_data = {
-            "text": text,
+            "id": question_id
+            "text": text}
 
-        }
-    
     def record_answers():
-        answer_data:VectorStore,
+        return answer_data:VectorStore
+
+
+class ArgumentAssessment:
+    def __init__(self, debate_id, questions, answers):
+        self.debate_id = debate_id
+        self.debate_id = "???????"
+        self.questions = Outcomes.question_history
+        self.answers = Outcomes.answers_history
+    
+    def summary_analysis(self):
+        def __init__(self):
+            pass
+
+    def logical_coherence(self):
+        def __init__(self):
+            pass
+    
+    def factcheck(self):
+        def __init__(self):
+            pass
+
+class MetricsData:
+    def __init__(self):
+        pass
